@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语义标签仪表盘</title>
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --background-color: #f9faff;
+            --text-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .stat-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .stat-description {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>语义标签仪表盘</h1>
+            <p>查看语义库统计信息和数据分析</p>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <h2>主体语义标签</h2>
+                <div class="stat-value">{{ stats.subject_count }}</div>
+                <div class="stat-description">系统中的主体语义标签总数</div>
+            </div>
+            
+            <div class="stat-card">
+                <h2>环境语义标签</h2>
+                <div class="stat-value">{{ stats.environment_count }}</div>
+                <div class="stat-description">系统中的环境语义标签总数</div>
+            </div>
+            
+            <div class="stat-card">
+                <h2>行为语义标签</h2>
+                <div class="stat-value">{{ stats.behavior_count }}</div>
+                <div class="stat-description">系统中的行为语义标签总数</div>
+            </div>
+            
+            <div class="stat-card">
+                <h2>用户总数</h2>
+                <div class="stat-value">{{ stats.users_count }}</div>
+                <div class="stat-description">已注册的用户总数</div>
+            </div>
+            
+            <div class="stat-card">
+                <h2>语义密码总数</h2>
+                <div class="stat-value">{{ stats.passwords_count }}</div>
+                <div class="stat-description">已创建的语义密码总数</div>
+            </div>
+            
+            <div class="stat-card">
+                <h2>认证图片总数</h2>
+                <div class="stat-value">{{ stats.images_count }}</div>
+                <div class="stat-description">系统中的认证图片总数</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

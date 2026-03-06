@@ -1,0 +1,150 @@
+import os
+
+
+def update_readme():
+    """创建详细的 README 文件，特别是 MySQL 配置部分"""
+    readme_content = '''语义认证应用使用说明
+====================================
+
+【目录】
+一、系统要求
+二、安装前准备
+三、MySQL 数据库配置
+四、启动应用
+五、常见问题
+六、故障排除
+七、联系支持
+
+====================================
+
+一、系统要求
+------------------------------------
+1. Windows 10 或更高版本
+2. MySQL 5.7 或更高版本
+3. 至少 4GB 内存，推荐 8GB 或更高
+4. 至少 2GB 可用磁盘空间
+
+二、安装前准备
+------------------------------------
+1. 确保已安装 MySQL 数据库服务器
+2. 确保 MySQL 服务已启动并正常运行
+3. 准备好 MySQL 的用户名和密码
+
+三、MySQL 数据库配置
+------------------------------------
+【重要】应用首次启动前必须正确配置 MySQL 数据库
+
+1. 创建数据库：
+   a. 打开 MySQL 命令行客户端或 MySQL Workbench
+   b. 使用管理员账户登录 MySQL
+   c. 执行以下 SQL 命令创建数据库：
+      CREATE DATABASE semantic_auth CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+2. 创建用户并授权：
+   a. 执行以下 SQL 命令创建用户并授予权限：
+      CREATE USER 'semantic_user'@'localhost' IDENTIFIED BY '您的密码';
+      GRANT ALL PRIVILEGES ON semantic_auth.* TO 'semantic_user'@'localhost';
+      FLUSH PRIVILEGES;
+   b. 请将 '您的密码' 替换为强密码
+
+3. 配置应用连接：
+   a. 在应用目录下找到 config.py 文件
+   b. 编辑该文件，修改以下配置项：
+      SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://semantic_user:您的密码@localhost/semantic_auth'
+   c. 将 '您的密码' 替换为您在步骤 2 中设置的密码
+   d. 保存文件
+
+4. 数据库初始化：
+   a. 应用首次启动时会自动创建必要的表结构
+   b. 如需手动初始化数据库，请执行以下命令：
+      在应用目录中打开命令提示符，输入：
+      SemanticAuthApp.exe --init-db
+
+四、启动应用
+------------------------------------
+1. 确保 MySQL 服务已启动
+   a. 在 Windows 搜索栏中输入 "services.msc" 并运行
+   b. 在服务列表中找到 "MySQL" 服务
+   c. 确保其状态为 "正在运行"，如果不是，右键点击并选择 "启动"
+
+2. 双击 "启动应用.bat" 文件
+   a. 如果出现 Windows 安全警告，点击 "更多信息" 然后 "仍要运行"
+
+3. 应用将自动在浏览器中打开
+   a. 默认访问地址为 http://localhost:5000
+   b. 如果浏览器未自动打开，请手动访问此地址
+
+4. 首次使用
+   a. 首次访问时，系统会提示创建管理员账户
+   b. 请按照提示完成初始设置
+
+五、常见问题
+------------------------------------
+1. 应用无法启动
+   a. 检查 MySQL 服务是否正在运行
+   b. 检查数据库连接配置是否正确
+   c. 查看 logs 文件夹中的日志文件获取详细错误信息
+
+2. 浏览器未自动打开
+   a. 手动访问 http://localhost:5000
+   b. 如果无法访问，检查应用是否正在运行
+
+3. 数据库连接错误
+   a. 确认 MySQL 服务正在运行
+   b. 验证数据库用户名和密码是否正确
+   c. 检查防火墙是否阻止了应用访问 MySQL
+
+4. "无法连接到服务器" 错误
+   a. 确保应用正在运行且没有被防火墙阻止
+   b. 检查端口 5000 是否被其他应用占用
+
+六、故障排除
+------------------------------------
+1. 检查日志文件
+   a. 应用日志位于 logs 文件夹中
+   b. 查看 app.log 文件获取详细错误信息
+
+2. 重置数据库连接
+   a. 确认 MySQL 凭据正确
+   b. 重新启动 MySQL 服务
+   c. 重新启动应用
+
+3. 防火墙设置
+   a. 确保 Windows 防火墙允许应用通信
+   b. 添加例外：控制面板 > 系统和安全 > Windows Defender 防火墙 > 允许应用通过防火墙
+
+4. 端口冲突解决
+   a. 如果端口 5000 被占用，可以编辑 config.py 修改端口
+   b. 修改 PORT = 5000 为其他值，如 PORT = 5001
+   c. 保存后重启应用
+
+七、联系支持
+------------------------------------
+如有任何问题或需要技术支持，请联系：
+
+电子邮件: support@example.com
+技术支持电话: XXX-XXXX-XXXX
+
+====================================
+版本: 1.0.0
+最后更新: 2025年7月2日
+'''
+
+    try:
+        # 更新打包目录中的 README 文件
+        with open('dist/SemanticAuthApp/README.txt', 'w', encoding='utf-8') as f:
+            f.write(readme_content)
+        print("✓ README 文件已更新，包含详细的 MySQL 配置说明")
+
+        # 可选：同时更新项目根目录的 README 文件
+        with open('README.txt', 'w', encoding='utf-8') as f:
+            f.write(readme_content)
+        print("✓ 项目根目录的 README 文件也已更新")
+
+    except Exception as e:
+        print(f"✗ 更新 README 文件失败: {str(e)}")
+
+
+if __name__ == "__main__":
+    update_readme()
+    print("\n完成！README 文件已更新，用户现在可以按照详细说明配置 MySQL 并运行应用。")

@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.venv/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Build & Distribution
+dist/
+build/
+*.spec
+
+# Project Specific
+user_images/
+uploads/
+app/models/Qwen1.5-1.8B-Chat/
+app/models/chinese-bert-wwm-ext/
+app/models/hunyuan-dit/
+app/models/openai-clip-vit-large-patch14/
+
+# Temp files
+temp_scripts/
+test_output/
+*.bak
+*.tmp

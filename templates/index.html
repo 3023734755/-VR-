@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语义认证系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3f37c9;
+            --secondary-color: #4cc9f0;
+            --background-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --text-color: #212529;
+            --text-secondary: #6c757d;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            min-height: 600px;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .sidebar {
+            width: 40%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0.6;
+            transform: rotate(-15deg);
+        }
+        
+        .sidebar h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            position: relative;
+            font-weight: 700;
+            display: inline-block;
+        }
+        
+        .sidebar h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 3px;
+        }
+        
+        .sidebar p {
+            margin-bottom: 30px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .features {
+            margin-top: 30px;
+            position: relative;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            transition: transform var(--transition-speed) ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 22px;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-item:hover .feature-icon {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .feature-item h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .feature-item p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin: 0;
+        }
+        
+        .main-content {
+            width: 60%;
+            padding: 40px;
+            position: relative;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+            color: #777;
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(78, 84, 200, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .message::before {
+            margin-right: 10px;
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 18px;
+        }
+        
+        .success {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .success::before {
+            content: '\f058'; /* check-circle */
+        }
+        
+        .error {
+            background-color: rgba(244, 67, 54, 0.15);
+            color: var(--error-color);
+            border-left: 4px solid var(--error-color);
+        }
+        
+        .error::before {
+            content: '\f057'; /* times-circle */
+        }
+        
+        .warning {
+            background-color: rgba(255, 152, 0, 0.15);
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .warning::before {
+            content: '\f071'; /* exclamation-triangle */
+        }
+        
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .toggle-form a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .toggle-form a:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 3px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .step {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0 20px;
+            position: relative;
+            z-index: 2;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+        
+        .step.completed {
+            background: linear-gradient(135deg, var(--success-color), #81c784);
+            color: white;
+        }
+        
+        .step-label {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .step.completed .step-label {
+            color: var(--success-color);
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .image-item {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            aspect-ratio: 1/1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+        }
+        
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .image-item.selected {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .image-item.selected img {
+            transform: scale(1.05);
+        }
+        
+        .image-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(67, 97, 238, 0.1);
+            opacity: 0;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .image-item:hover::after {
+            opacity: 1;
+        }
+        
+        .image-item.selected::after {
+            background: rgba(67, 97, 238, 0.2);
+            opacity: 1;
+        }
+        
+        .image-item.selected::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .position-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar, .main-content {
+                width: 100%;
+            }
+            
+            .sidebar {
+                padding: 30px;
+            }
+            
+            .images-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .step {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                margin: 0 10px;
+            }
+            
+            .step-label {
+                font-size: 12px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* 加载动画 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-text {
+            position: absolute;
+            top: calc(50% + 40px);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .login-success {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: var(--success-color);
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        .success-message {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .user-info {
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .user-info p {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .user-info p span:last-child {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            padding: 12px 25px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.2);
+        }
+        
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+        
+        .home-button i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>语义认证系统</h1>
+            <p>基于语义的新一代身份认证解决方案，为您提供安全、便捷的登录体验。</p>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div>
+                        <h3>安全可靠</h3>
+                        <p>基于语义认知的多因素身份验证</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <div>
+                        <h3>智能认证</h3>
+                        <p>AI生成个性化语义密码和认证图片</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-user-lock"></i></div>
+                    <div>
+                        <h3>个人专属</h3>
+                        <p>为每位用户定制独特的语义密码体验</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="tabs">
+                <div class="tab active" data-tab="login">登录</div>
+                <div class="tab" data-tab="register">注册</div>
+            </div>
+            
+            <!-- 登录表单 -->
+            <div id="login-content" class="tab-content active">
+                <div class="step-indicator">
+                    <div id="login-step1" class="step active">
+                        1
+                        <div class="step-label">输入用户名</div>
+                    </div>
+                    <div id="login-step2" class="step">
+                        2
+                        <div class="step-label">选择密码</div>
+                    </div>
+                    <div id="login-step3" class="step">
+                        3
+                        <div class="step-label">登录成功</div>
+                    </div>
+                </div>
+                
+                <div id="username-form" class="form-content">
+                    <div class="form-group">
+                        <label for="login-username">用户名</label>
+                        <input type="text" id="login-username" placeholder="请输入您的用户名" required>
+                    </div>
+                    <button id="submit-login-username">下一步</button>
+                    <div id="login-username-message" class="message hidden"></div>
+                </div>
+                
+                <!-- 登录图片选择步骤将在稍后显示 -->
+                <div id="login-image-selection" class="form-content hidden">
+                    <div class="position-text" id="login-position-text">请选择位置1的语义密码图片</div>
+                    
+                    <div class="images-grid" id="login-images-grid">
+                        <!-- 图片将通过JS动态加载 -->
+                    </div>
+                    
+                    <button id="submit-login-image" class="hidden">确认选择</button>
+                    <div id="login-image-message" class="message hidden"></div>
+                </div>
+                
+                <!-- 登录成功步骤 -->
+                <div id="login-success" class="form-content hidden">
+                    <div class="login-success">
+                        <i class="fas fa-check-circle success-icon"></i>
+                        <div class="success-message">登录成功！</div>
+                        <p>欢迎回来，<span id="welcome-username"></span>！</p>
+                        
+                        <div class="user-info">
+                            <p><span>用户ID:</span> <span id="user-id"></span></p>
+                            <p><span>登录时间:</span> <span id="login-time"></span></p>
+                        </div>
+                        
+                        <a href="/dashboard" class="home-button">
+                            <i class="fas fa-tachometer-alt"></i> 前往仪表板
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 注册表单 -->
+            <div id="register-content" class="tab-content">
+                <div class="step-indicator">
+                    <div class="step active">
+                        1
+                        <div class="step-label">创建账号</div>
+                    </div>
+                    <div class="step">
+                        2
+                        <div class="step-label">选择故事</div>
+                    </div>
+                    <div class="step">
+                        3
+                        <div class="step-label">语义密码</div>
+                    </div>
+                </div>
+                
+                <p>通过语义认证系统进行注册，创建您的个性化语义密码</p>
+                <a href="/auth/register" class="register-button" style="display: inline-block; text-decoration: none; background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white; border: none; border-radius: var(--border-radius); padding: 12px 25px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3); width: 100%; text-align: center; margin-bottom: 15px;">开始注册</a>
+                
+                <div class="toggle-form">
+                    <p>已有账号？<a href="#" class="tab-link" data-tab="login">立即登录</a></p>
+                    <p style="margin-top: 10px; font-size: 16px; color: #e74c3c; font-weight: bold;">如果上方按钮无法正常工作，请使用以下备用链接：</p>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                        <a href="/auth/register" style="margin: 5px; padding: 8px 15px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;">备用链接 1</a>
+                        <a href="/register" style="margin: 5px; padding: 8px 15px; background-color: #2ecc71; color: white; text-decoration: none; border-radius: 4px;">备用链接 2</a>
+                        <a href="javascript:window.location.href='/auth/register'" style="margin: 5px; padding: 8px 15px; background-color: #9b59b6; color: white; text-decoration: none; border-radius: 4px;">备用链接 3</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载动画 -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">处理中，请稍候...</div>
+    </div>
+    
+    <script>
+        // 切换登录和注册表单
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const tabLinks = document.querySelectorAll('.tab-link');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                activateTab(tabId);
+            });
+        });
+        
+        tabLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+                activateTab(tabId);
+            });
+        });
+        
+        function activateTab(tabId) {
+            // 激活选中的标签
+            tabs.forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // 显示对应的内容
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabId}-content`) {
+                    content.classList.add('active');
+                }
+            });
+        }
+        
+        // 登录功能
+        const usernameForm = document.getElementById('username-form');
+        const loginImageSelection = document.getElementById('login-image-selection');
+        const loginSuccess = document.getElementById('login-success');
+        const loginUsernameInput = document.getElementById('login-username');
+        const submitLoginUsername = document.getElementById('submit-login-username');
+        const loginUsernameMessage = document.getElementById('login-username-message');
+        const loginImagesGrid = document.getElementById('login-images-grid');
+        const loginPositionText = document.getElementById('login-position-text');
+        const submitLoginImage = document.getElementById('submit-login-image');
+        const loginImageMessage = document.getElementById('login-image-message');
+        const welcomeUsername = document.getElementById('welcome-username');
+        const userID = document.getElementById('user-id');
+        const loginTime = document.getElementById('login-time');
+        
+        // 步骤元素
+        const loginStep1 = document.getElementById('login-step1');
+        const loginStep2 = document.getElementById('login-step2');
+        const loginStep3 = document.getElementById('login-step3');
+        
+        // 加载动画元素
+        const loadingOverlay = document.getElementById('loading-overlay');
+        
+        // 登录状态
+        const loginState = {
+            username: '',
+            challengeId: '',
+            currentPosition: 1,
+            selectedImage: null,
+            maxPosition: 3,
+        };
+        
+        // 事件监听器
+        submitLoginUsername.addEventListener('click', handleLoginUsernameSubmit);
+        submitLoginImage.addEventListener('click', handleLoginImageSubmit);
+        
+        // 处理登录用户名提交
+        async function handleLoginUsernameSubmit() {
+            const username = loginUsernameInput.value.trim();
+            
+            if (!username) {
+                showMessage(loginUsernameMessage, '请输入用户名', 'error');
+                return;
+            }
+            
+            loginState.username = username;
+            
+            try {
+                submitLoginUsername.disabled = true;
+                submitLoginUsername.innerHTML = '<span class="loading-indicator"></span>处理中...';
+                showLoadingOverlay(true);
+                
+                const response = await fetch('/auth/login/challenge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username }),
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || '获取认证挑战失败');
+                }
+                
+                // 保存挑战ID
+                loginState.challengeId = data.challenge_id;
+                
+                // 更新UI，进入图片选择阶段
+                showStep(2);
+                loadImagesForPosition(1);
+            } catch (error) {
+                showMessage(loginUsernameMessage, error.message, 'error');
+            } finally {
+                submitLoginUsername.disabled = false;
+                submitLoginUsername.textContent = '下一步';
+                showLoadingOverlay(false);
+            }
+        }
+        
+        // 加载指定位置的图片
+        async function loadImagesForPosition(position) {
+            try {
+                // 清空已选择的图片
+                loginState.selectedImage = null;
+                submitLoginImage.classList.add('hidden');
+                showLoadingOverlay(true);
+                
+                // 更新位置文本
+                loginPositionText.textContent = `请选择位置${position}的语义密码图片`;
+                
+                // 清空图片网格
+                loginImagesGrid.innerHTML = '';
+                
+                const response = await fetch(`/auth/login/images/${loginState.challengeId}/${position}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || '获取认证图片失败');
+                }
+                
+                // 渲染图片
+                data.images.forEach(image => {
+                    const imageItem = document.createElement('div');
+                    imageItem.classList.add('image-item');
+                    imageItem.dataset.imageId = image.id;
+                    
+                    const img = document.createElement('img');
+                    img.src = image.url;
+                    img.alt = `认证图片 ${image.id}`;
+                    img.onerror = () => {
+                        img.src = '/static/img/placeholder.png';
+                        img.alt = '图片加载失败';
+                    };
+                    
+                    imageItem.appendChild(img);
+                    imageItem.addEventListener('click', () => handleLoginImageSelection(imageItem));
+                    
+                    loginImagesGrid.appendChild(imageItem);
+                });
+                
+                loginState.currentPosition = position;
+                
+            } catch (error) {
+                showMessage(loginImageMessage, error.message, 'error');
+            } finally {
+                showLoadingOverlay(false);
+            }
+        }
+        
+        // 处理图片选择
+        function handleLoginImageSelection(imageItem) {
+            // 清除之前的选择
+            const selectedItems = document.querySelectorAll('.image-item.selected');
+            selectedItems.forEach(item => item.classList.remove('selected'));
+            
+            // 选择当前图片
+            imageItem.classList.add('selected');
+            loginState.selectedImage = imageItem.dataset.imageId;
+            
+            // 显示提交按钮
+            submitLoginImage.classList.remove('hidden');
+            
+            // 清除错误消息
+            loginImageMessage.classList.add('hidden');
+        }
+        
+        // 处理图片提交
+        async function handleLoginImageSubmit() {
+            if (!loginState.selectedImage) {
+                showMessage(loginImageMessage, '请选择一张图片', 'error');
+                return;
+            }
+            
+            try {
+                submitLoginImage.disabled = true;
+                submitLoginImage.innerHTML = '<span class="loading-indicator"></span>处理中...';
+                showLoadingOverlay(true);
+                
+                const response = await fetch('/auth/login/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        challenge_id: loginState.challengeId,
+                        position: loginState.currentPosition,
+                        image_id: loginState.selectedImage,
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || '验证失败');
+                }
+                
+                if (data.success) {
+                    if (data.completed) {
+                        // 所有位置验证完成，登录成功
+                        showMessage(loginImageMessage, '登录成功！', 'success');
+                        welcomeUsername.textContent = loginState.username;
+                        userID.textContent = data.user_id || '未知';
+                        loginTime.textContent = new Date().toLocaleString();
+                        
+                        // 延迟显示成功页面
+                        setTimeout(() => {
+                            showStep(3);
+                        }, 1000);
+                    } else {
+                        // 继续下一个位置
+                        showMessage(loginImageMessage, '验证成功，继续下一个位置', 'success');
+                        
+                        // 延迟加载下一个位置的图片
+                        setTimeout(() => {
+                            loadImagesForPosition(data.next_position);
+                            loginImageMessage.classList.add('hidden');
+                        }, 1000);
+                    }
+                } else {
+                    throw new Error(data.message || '验证失败');
+                }
+                
+            } catch (error) {
+                showMessage(loginImageMessage, error.message, 'error');
+            } finally {
+                submitLoginImage.disabled = false;
+                submitLoginImage.textContent = '确认选择';
+                showLoadingOverlay(false);
+            }
+        }
+        
+        // 显示消息
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `message ${type}`;
+            element.classList.remove('hidden');
+        }
+        
+        // 显示指定步骤
+        function showStep(step) {
+            usernameForm.classList.add('hidden');
+            loginImageSelection.classList.add('hidden');
+            loginSuccess.classList.add('hidden');
+            
+            // 重置消息
+            loginUsernameMessage.classList.add('hidden');
+            loginImageMessage.classList.add('hidden');
+            
+            switch (step) {
+                case 1:
+                    usernameForm.classList.remove('hidden');
+                    updateStepIndicator(1);
+                    break;
+                case 2:
+                    loginImageSelection.classList.remove('hidden');
+                    updateStepIndicator(2);
+                    break;
+                case 3:
+                    loginSuccess.classList.remove('hidden');
+                    updateStepIndicator(3);
+                    break;
+            }
+        }
+        
+        // 更新步骤指示器
+        function updateStepIndicator(currentStep) {
+            loginStep1.classList.remove('active', 'completed');
+            loginStep2.classList.remove('active', 'completed');
+            loginStep3.classList.remove('active', 'completed');
+            
+            if (currentStep > 1) {
+                loginStep1.classList.add('completed');
+            } else {
+                loginStep1.classList.add('active');
+            }
+            
+            if (currentStep > 2) {
+                loginStep2.classList.add('completed');
+            } else if (currentStep === 2) {
+                loginStep2.classList.add('active');
+            }
+            
+            if (currentStep === 3) {
+                loginStep3.classList.add('active');
+            }
+        }
+        
+        // 显示/隐藏加载动画
+        function showLoadingOverlay(show) {
+            try {
+                if (!loadingOverlay) {
+                    console.error('找不到loading-overlay元素');
+                    ensureLoadingOverlay();
+                    return;
+                }
+                
+                if (show) {
+                    loadingOverlay.classList.remove('hidden');
+                    console.log('显示加载动画');
+                    
+                    // 确保应急按钮存在
+                    ensureEmergencyButton();
+                    
+                    // 设置安全超时，确保加载动画不会永远显示
+                    if (window._loadingTimeout) {
+                        clearTimeout(window._loadingTimeout);
+                    }
+                    
+                    window._loadingTimeout = setTimeout(() => {
+                        console.log('加载动画安全超时，自动隐藏');
+                        loadingOverlay.classList.add('hidden');
+                    }, 15000); // 15秒后自动隐藏
+                } else {
+                    loadingOverlay.classList.add('hidden');
+                    console.log('隐藏加载动画');
+                    
+                    if (window._loadingTimeout) {
+                        clearTimeout(window._loadingTimeout);
+                    }
+                }
+            } catch (error) {
+                console.error('显示/隐藏加载动画出错:', error);
+                // 尝试强制隐藏
+                try {
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                } catch (e) {
+                    console.error('强制隐藏加载动画失败');
+                }
+            }
+        }
+        
+        // 确保应急按钮存在
+        function ensureEmergencyButton() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (!loadingOverlay) return;
+            
+            // 检查是否已存在应急按钮
+            if (loadingOverlay.querySelector('.emergency-button')) return;
+            
+            // 创建应急按钮
+            const emergencyButton = document.createElement('button');
+            emergencyButton.textContent = '取消加载';
+            emergencyButton.className = 'emergency-button';
+            emergencyButton.style.marginTop = '20px';
+            emergencyButton.style.padding = '8px 15px';
+            emergencyButton.style.backgroundColor = '#f44336';
+            emergencyButton.style.color = 'white';
+            emergencyButton.style.border = 'none';
+            emergencyButton.style.borderRadius = '4px';
+            emergencyButton.style.cursor = 'pointer';
+            emergencyButton.style.display = 'none'; // 初始隐藏
+            
+            emergencyButton.addEventListener('click', function() {
+                console.log('用户点击了应急按钮，强制隐藏加载动画');
+                loadingOverlay.classList.add('hidden');
+                
+                // 显示提示信息
+                const message = document.createElement('div');
+                message.className = 'message warning';
+                message.textContent = '加载已取消。请刷新页面重试。';
+                message.style.position = 'fixed';
+                message.style.top = '10px';
+                message.style.left = '50%';
+                message.style.transform = 'translateX(-50%)';
+                message.style.zIndex = '9999';
+                message.style.padding = '15px 20px';
+                message.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+                document.body.appendChild(message);
+                
+                // 10秒后自动移除
+                setTimeout(() => {
+                    message.remove();
+                }, 10000);
+            });
+            
+            loadingOverlay.appendChild(emergencyButton);
+            
+            // 5秒后显示应急按钮
+            setTimeout(() => {
+                emergencyButton.style.display = 'block';
+            }, 5000);
+        }
+        
+        // 确保加载动画元素存在
+        function ensureLoadingOverlay() {
+            let overlay = document.getElementById('loading-overlay');
+            if (!overlay) {
+                console.log('创建loading overlay元素');
+                overlay = document.createElement('div');
+                overlay.id = 'loading-overlay';
+                overlay.className = 'loading-overlay hidden';
+                
+                const spinner = document.createElement('div');
+                spinner.className = 'loading-spinner';
+                
+                const loadingText = document.createElement('div');
+                loadingText.className = 'loading-text';
+                loadingText.textContent = '处理中，请稍候...';
+                
+                overlay.appendChild(spinner);
+                overlay.appendChild(loadingText);
+                document.body.appendChild(overlay);
+                
+                // 更新全局引用
+                loadingOverlay = overlay;
+                
+                // 添加应急按钮
+                ensureEmergencyButton();
+            }
+        }
+        
+        // 页面加载完成后执行
+        window.addEventListener('load', function() {
+            console.log('页面完全加载完成');
+            
+            // 检查是否有加载动画显示
+            if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+                console.log('页面加载时发现加载动画显示，立即隐藏');
+                loadingOverlay.classList.add('hidden');
+            }
+            
+            // 每10秒检查一次加载动画状态
+            setInterval(function() {
+                if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+                    console.log('定期检查发现加载动画仍在显示，尝试隐藏');
+                    // 显示应急按钮
+                    const emergencyButton = loadingOverlay.querySelector('.emergency-button');
+                    if (emergencyButton) {
+                        emergencyButton.style.display = 'block';
+                    }
+                }
+            }, 10000);
+        });
+    </script>
+</body>
+</html> 
