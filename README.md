@@ -4,6 +4,7 @@
 
 ## 🚀 技术栈
 
+- **前端**: Unity 3D (部署于 VR VIVE PRO, 提供沉浸式用户界面)
 - **后端**: Flask 3.0.3, SQLAlchemy, MySQL
 - **AI/ML**: 
   - **Qwen1.5-1.8B-Chat**: 用于生成故事。
