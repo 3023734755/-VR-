@@ -15,6 +15,12 @@ PyMySQL==1.1.1
 alembic==1.13.1
 Mako==1.3.5
 
+# Redis（挑战票据与服务器端会话存储）
+# 注意：本地 Redis 服务为 Windows 移植版 3.0.504，仅支持 RESP2；
+# redis-py 8.x 连接时会发 HELLO 做 RESP3 握手导致失败，必须使用 4.6.x
+redis==4.6.0
+Flask-Session==0.8.0
+
 # 深度学习与AI (PyTorch生态)
 # 注意: 安装 torch 时请根据您的 CUDA 版本选择合适的命令，例如:
 # pip install torch==2.3.1 --index-url https://download.pytorch.org/whl/cu121

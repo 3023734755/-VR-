@@ -2,7 +2,6 @@ from datetime import datetime
 from app import db
 import random
 import os
-from app.models.auth_challenge import AuthChallenge  # 从专用模块导入AuthChallenge
 from app.models.auth_images import AuthImage  # 从专用模块导入AuthImage
 
 # 用户表
@@ -12,7 +11,6 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True, index=True, nullable=False)
     registered_on = db.Column(db.DateTime, default=datetime.utcnow)
     semantic_passwords = db.relationship('SemanticPassword', backref='user', lazy='dynamic')
-    auth_challenges = db.relationship('AuthChallenge', backref='user', lazy='dynamic')
     
     def __repr__(self):
         return f'<User {self.username}>'
@@ -94,4 +92,4 @@ class CompanionSemantic(db.Model):
         return f'<CompanionSemantic Password:{self.semantic_password_id} Pos:{self.position}>'
 
 # 注：AuthImage类已移至app/models/auth_images.py
-# 注：AuthChallenge类已移至app/models/auth_challenge.py
+# 注：AuthChallenge已从MySQL迁移至Redis存储，见app/models/auth_challenge.py

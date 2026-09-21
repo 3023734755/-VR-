@@ -7,11 +7,10 @@ from flask import current_app
 def check_tables_exist():
     inspector = inspect(db.engine)
     required_tables = [
-        'users', 
-        'semantic_library', 
-        'semantic_passwords', 
+        'users',
+        'semantic_library',
+        'semantic_passwords',
         'companion_semantics',
-        'auth_challenges',
         'auth_images'
     ]
     existing_tables = inspector.get_table_names()

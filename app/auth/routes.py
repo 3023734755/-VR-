@@ -1118,7 +1118,7 @@ def get_login_images(challenge_id, position):
         
         # 验证挑战ID
         from app.models.auth_challenge import AuthChallenge
-        challenge = AuthChallenge.query.filter_by(challenge_id=challenge_id).first()
+        challenge = AuthChallenge.get(challenge_id)
         
         if not challenge:
             current_app.logger.warning(f"无效的挑战ID: {challenge_id}")
@@ -1214,7 +1214,7 @@ def verify_login():
         
         # 验证挑战ID
         from app.models.auth_challenge import AuthChallenge
-        challenge = AuthChallenge.query.filter_by(challenge_id=challenge_id).first()
+        challenge = AuthChallenge.get(challenge_id)
         
         if not challenge:
             current_app.logger.warning(f"无效的挑战ID: {challenge_id}")
@@ -1251,10 +1251,11 @@ def verify_login():
         
         # 检查是否是正确的语义密码图片
         if not auth_image.is_password_image:
-            # 验证失败，标记挑战为已使用
-            challenge.mark_used()
-            db.session.commit()
-            
+            # 验证失败，原子消费挑战票据（防重放）；消费失败说明已被并发请求抢先处理
+            if not challenge.mark_used():
+                current_app.logger.warning(f"挑战已被并发消费，拒绝处理: {challenge_id}")
+                return jsonify({'error': '挑战已过期或已使用'}), 400
+
             current_app.logger.warning(f"用户 {user.username} 在位置 {position}(数据库位置:{db_position}) 选择了错误的图片")
             
             # 获取正确的图片信息，用于日志记录
@@ -1276,10 +1277,11 @@ def verify_login():
         # 如果是最后一个位置，则登录成功
         semantic_count = current_app.config.get('SEMANTIC_COUNT', 3)
         if position == semantic_count:
-            # 验证成功，标记挑战为已使用
-            challenge.mark_used()
-            db.session.commit()
-            
+            # 验证成功，原子消费挑战票据；消费失败说明已被并发请求抢先处理
+            if not challenge.mark_used():
+                current_app.logger.warning(f"挑战已被并发消费，拒绝处理: {challenge_id}")
+                return jsonify({'error': '挑战已过期或已使用'}), 400
+
             # 生成会话令牌
             session['user_id'] = user.id
             session['username'] = user.username

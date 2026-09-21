@@ -33,7 +33,5 @@ app/models/hunyuan-dit/
 app/models/openai-clip-vit-large-patch14/
 
 # Temp files
-temp_scripts/
-test_output/
 *.bak
 *.tmp

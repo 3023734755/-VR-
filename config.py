@@ -1,18 +1,26 @@
 import os
+from datetime import timedelta
 
 class Config:
     # 服务器配置
     PORT = int(os.environ.get('PORT', 5000))  # 应用端口配置，改回5000
-    
+
     # 秘钥配置
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-key-please-change-in-production')
     # 服务器签名密钥 - 用于登录挑战签名
     SERVER_SIGNATURE_KEY = os.environ.get('SERVER_SIGNATURE_KEY') or 'secure-server-signature-key'
-    
-    # 会话配置
-    SESSION_TYPE = 'filesystem'
+
+    # 会话配置（服务器端会话，存储于 Redis，客户端 Cookie 只保存会话 ID）
+    SESSION_TYPE = 'redis'
     SESSION_PERMANENT = True
-    PERMANENT_SESSION_LIFETIME = 86400  # 会话有效期为1天（秒）
+    PERMANENT_SESSION_LIFETIME = timedelta(days=1)  # 会话有效期 1 天
+    SESSION_KEY_PREFIX = 'session:'  # Redis 中会话键前缀
+
+    # Redis 配置（挑战票据与服务器端会话的存储）
+    REDIS_HOST = os.environ.get('REDIS_HOST', '127.0.0.1')
+    REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+    REDIS_DB = int(os.environ.get('REDIS_DB', 0))
+    REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')  # 本机 Redis 服务默认无密码
     
     # 数据库配置
     DB_USER = os.environ.get('DB_USER', 'root')

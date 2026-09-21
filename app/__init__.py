@@ -140,6 +140,18 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     CORS(app)  # 启用跨域支持，便于Unity前端与Flask后端通信
+
+    # 初始化 Redis（挑战票据 + 服务器端会话的存储）
+    from app.utils.redis_client import get_redis, check_redis_connection
+    if check_redis_connection(app):
+        app.logger.info(f"Redis 连接成功: {app.config['REDIS_HOST']}:{app.config['REDIS_PORT']} (db={app.config['REDIS_DB']})")
+    else:
+        app.logger.error("Redis 连接失败！登录挑战与服务器端会话将不可用，请检查 Redis 服务是否启动")
+
+    # 服务器端会话：Session 数据存 Redis，客户端 Cookie 只保存会话 ID
+    from flask_session import Session
+    app.config['SESSION_REDIS'] = get_redis(app)
+    Session(app)
     
     # 确保上传目录存在
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

@@ -6,6 +6,7 @@
 
 - **前端**: Unity 3D (部署于 VR VIVE PRO, 提供沉浸式用户界面)
 - **后端**: Flask 3.0.3, SQLAlchemy, MySQL
+- **存储架构**: MySQL（用户/语义库等关系型数据）+ Redis（挑战票据、服务器端 Session 等短生命周期热数据）
 - **AI/ML**: 
   - **Qwen1.5-1.8B-Chat**: 用于生成故事。
   - **Chinese-BERT-WWM-Ext**: 用于语义标签提取。
@@ -33,7 +34,20 @@ pip install -r requirements.txt
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:password@localhost/db_name'
 ```
 
-### 3. 运行
+### 3. Redis 配置
+Redis 承载两类数据，需在启动应用前先启动 Redis 服务（本机 6379 端口）：
+- **挑战票据**（`challenge:*` 键）：登录挑战-响应流程的票据，SETEX 写入带 15 分钟 TTL，消费即删除（DEL 原子操作防重放）
+- **服务器端 Session**（`session:*` 键）：Flask-Session 的 redis 后端，客户端 Cookie 只保存会话 ID
+
+连接参数在 `config.py` 中配置（默认 127.0.0.1:6379，无密码）：
+```python
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
+REDIS_DB = 0
+REDIS_PASSWORD = None
+```
+
+### 4. 运行
 ```bash
 python app_launcher.py
 ```
